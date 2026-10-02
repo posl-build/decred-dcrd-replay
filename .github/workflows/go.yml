@@ -1,12 +1,13 @@
 name: Build and Test
-on: [push, pull_request]
+on:
+  workflow_dispatch:
 permissions:
   contents: read
 
 jobs:
   resolve-modules:
     name: Resolve Go modules
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       module_dirs: ${{ steps.resolve_module_dirs.outputs.module_dirs }}
     steps:
@@ -20,7 +21,7 @@ jobs:
           echo "module_dirs=[${MODPATHS%,}]" >> $GITHUB_OUTPUT
   build:
     name: Go CI
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       matrix:
         go: ["1.26", "1.27"]
@@ -42,7 +43,7 @@ jobs:
   lint:
     name: Lint
     needs: resolve-modules
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       matrix:
         module_dirs: ${{ fromJson(needs.resolve-modules.outputs.module_dirs ) }}
